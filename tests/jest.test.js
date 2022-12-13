@@ -5,8 +5,9 @@ const path = require('path');
 const fs = require('fs');
 
 const fsPromises = fs.promises;
-const TonstorageCLI = require('../index');
+const TonstorageCLI = require('../src');
 
+// clear the list before running the tests!
 describe('tonstorage-cli unit tests', () => {
   let CLI;
   let tempFolderPath;
@@ -80,7 +81,7 @@ describe('tonstorage-cli unit tests', () => {
     expect(getPeers).toEqual({
       ok: true,
       result: {
-        hash: '86E62F6715E0397D128F85586867C7042C15F91B8F65EF1B6F191B852CFD2B83',
+        hash,
         downloadSpeed: '0B/s',
         uploadSpeed: '0B/s',
         count: 0,
@@ -108,15 +109,13 @@ describe('tonstorage-cli unit tests', () => {
   });
 
   test('getMeta', async () => {
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    const getMeta = await CLI.getMeta('EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F', path.join(tempFolderPath, 'meta'));
+    const getMeta = await CLI.getMeta(hash, path.join(tempFolderPath, 'meta'));
 
-    expect(getMeta).toEqual({ ok: true, result: { message: 'success', size: '107 B' }, code: 0 });
+    expect(getMeta).toEqual({ ok: true, result: { message: 'success', size: '265 B' }, code: 0 });
   });
 
   test('addByMeta', async () => {
-    await CLI.remove('EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F');
+    await CLI.remove(hash);
     const addByMeta = await CLI.addByMeta(path.join(tempFolderPath, 'meta'), {
       download: false,
       rootDir: null,
@@ -127,15 +126,23 @@ describe('tonstorage-cli unit tests', () => {
       ok: true,
       result: {
         id: 0,
-        hash: 'EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F',
+        hash,
         downloadSpeed: null,
         uploadSpeed: '0B/s',
-        total: '47MB',
-        description: null,
+        total: '69B',
+        description: 'readme.md file',
         dirName: null,
-        rootDir: '/var/ton-storage/torrent/torrent-files/EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F',
-        count: null,
-        files: [],
+        rootDir: `/var/ton-storage/torrent/torrent-files/${hash}`,
+        count: 1,
+        files: [
+          {
+            index: 0,
+            name: 'readme.md',
+            prior: 1,
+            ready: '0B',
+            size: '12B',
+          },
+        ],
       },
       code: 0,
     });
@@ -159,7 +166,7 @@ describe('tonstorage-cli unit tests', () => {
 
     expect(priorityAll).toEqual({ ok: true, result: { message: 'success' }, code: 0 });
     expect(get.result.files).toEqual([{
-      index: 0, prior: 2, ready: '12B', size: '12B', name: 'readme.md',
+      index: 0, prior: 2, ready: '0B', size: '12B', name: 'readme.md',
     }]);
   });
 
@@ -169,7 +176,7 @@ describe('tonstorage-cli unit tests', () => {
 
     expect(priorityName).toEqual({ ok: true, result: { message: 'success' }, code: 0 });
     expect(get.result.files).toEqual([{
-      index: 0, prior: 3, ready: '12B', size: '12B', name: 'readme.md',
+      index: 0, prior: 3, ready: '0B', size: '12B', name: 'readme.md',
     }]);
   });
 
@@ -179,7 +186,7 @@ describe('tonstorage-cli unit tests', () => {
 
     expect(priorityIdx).toEqual({ ok: true, result: { message: 'success' }, code: 0 });
     expect(get.result.files).toEqual([{
-      index: 0, prior: 4, ready: '12B', size: '12B', name: 'readme.md',
+      index: 0, prior: 4, ready: '0B', size: '12B', name: 'readme.md',
     }]);
   });
 

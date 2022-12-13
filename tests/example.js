@@ -1,4 +1,4 @@
-const TonstorageCLI = require('../index');
+const TonstorageCLI = require('../src');
 
 (async () => {
   const CLI = new TonstorageCLI({
