@@ -266,7 +266,7 @@ module.exports = class TonstorageCLI {
 
     const std = await this.run(`add-by-hash ${hash} ${!options.download ? '--paused ' : ''}`
       + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
-      + `${options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`);
+      + `${options.partialFiles && options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`);
 
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
@@ -300,7 +300,7 @@ module.exports = class TonstorageCLI {
 
     const std = await this.run(`add-by-meta ${path} ${!options.download ? '--paused ' : ''}`
       + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
-      + `${options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`);
+      + `${options.partialFiles && options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`);
 
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
