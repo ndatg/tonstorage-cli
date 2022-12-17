@@ -84,7 +84,7 @@ module.exports = class TonstorageCLI {
     const DIR_NAME_REGEXP = /\s*dir\sname:\s(?<dirName>.+)\s*/i;
     const ROOT_DIR_REGEXP = /\s*root\sdir:\s(?<rootDir>.+)\s*/i;
     const COUNT_REGEXP = /\s*(?<count>[0-9]+)\sfiles:\s*/i;
-    const FILE_REGEXP = /\s*(?<index>[0-9]+):\s\((?<prior>[0-9]+)\)\s*(?<ready>[0-9]+\w+)\/(?<size>[0-9]+\w+)\s*(?<name>.+)\s*/i;
+    const FILE_REGEXP = /\s*(?<index>[0-9]+):\s\((?<prior>[0-9|-]+)\)\s*(?<ready>[0-9|-]+\w*)\/(?<size>[0-9]+\w+)\s*(?<name>.+)\s*/i;
 
     const std = await this.run(`get ${index}`);
     if (std.stderr) {
@@ -111,7 +111,8 @@ module.exports = class TonstorageCLI {
         files.push({
           ...fileMatch.groups,
           index: parseInt(fileMatch.groups.index, 10),
-          prior: parseInt(fileMatch.groups.prior, 10),
+          prior: fileMatch.groups.prior !== '---' ? parseInt(fileMatch.groups.prior, 10) : null,
+          ready: fileMatch.groups.ready !== '---' ? fileMatch.groups.ready : null,
         });
       }
     }
