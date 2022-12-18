@@ -18,7 +18,6 @@ module.exports = class TonstorageCLI {
         `${this.bin} -v 0 -I ${this.host} -k ${this.database}/cli-keys/client -p ${this.database}/cli-keys/server.pub --cmd "${cmd}"`,
         { timeout: options.timeout ? options.timeout : this.timeout },
       );
-      // console.log(std);
 
       return { stdout: std.stdout, stderr: '' };
     } catch (e) {
@@ -41,8 +40,8 @@ module.exports = class TonstorageCLI {
 
   // cli
   async list() {
-    const COUNT_REGEXP = /\s*(?<count>[0-9]+)\storrents\s*/i;
-    const TORRENT_REGEXP = /\s*(?<id>[0-9]+)\s*(?<hash>[A-F0-9]{64})\s*(?<description>.*)?\s(?<downloaded>[0-9]+\w+)\/([0-9]+\w+|[?+]*)\s*(?<total>[0-9]\w+|[?]+)\s*(?<status>[0-9]+\w+\/s|completed|paused)\s*/i;
+    const COUNT_REGEXP = /(?<count>[0-9]+)\storrents/i;
+    const TORRENT_REGEXP = /(?<id>[0-9]+)\s*(?<hash>[A-F0-9]{64})\s*(?<description>.*)?\s(?<downloaded>[0-9]+\w+)\/([0-9]+\w+|[?+]*)\s*(?<total>[0-9]\w+|[?]+)\s*(?<status>[0-9]+\w+\/s|completed|paused)/i;
 
     const std = await this.run('list --hashes');
     if (std.stderr) {
@@ -78,16 +77,16 @@ module.exports = class TonstorageCLI {
   }
 
   async get(index) {
-    const ID_REGEXP = /\s*id\s*=\s*(?<id>[0-9]+)\s*/i;
-    const HASH_REGEXP = /\s*hash\s*=\s*(?<hash>[A-F0-9]{64})\s*/i;
-    const DOWNLOADED_SPEED_REGEXP = /\s*download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
-    const UPLOAD_SPEED_REGEXP = /\s*upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const TOTAL_REGEXP = /\s*total\ssize:\s*(?<total>[0-9]+\w+)\s*/i;
+    const ID_REGEXP = /id\s*=\s*(?<id>[0-9]+)/i;
+    const HASH_REGEXP = /hash\s*=\s*(?<hash>[A-F0-9]{64})/i;
+    const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
+    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
+    const TOTAL_REGEXP = /total\ssize:\s*(?<total>[0-9]+\w+)/i;
     const DESCRIPTION_REGEXP = /-----------------------------------\s*(?<description>[\s\S]*)\n-----------------------------------/i;
-    const DIR_NAME_REGEXP = /\s*dir\sname:\s(?<dirName>.+)\s*/i;
-    const ROOT_DIR_REGEXP = /\s*root\sdir:\s(?<rootDir>.+)\s*/i;
-    const COUNT_REGEXP = /\s*(?<count>[0-9]+)\sfiles:\s*/i;
-    const FILE_REGEXP = /\s*(?<index>[0-9]+):\s\((?<prior>[0-9|-]+)\)\s*(?<ready>[0-9|-]+\w*)\/(?<size>[0-9]+\w+)\s*(?<name>.+)\s*/i;
+    const DIR_NAME_REGEXP = /dir\sname:\s(?<dirName>.+)/i;
+    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
+    const COUNT_REGEXP = /(?<count>[0-9]+)\sfiles:/i;
+    const FILE_REGEXP = /(?<index>[0-9]+):\s\((?<prior>[0-9|-]+)\)\s*(?<ready>[0-9|-]+\w*)\/(?<size>[0-9]+\w+)\s*(?<name>.+)/i;
 
     const std = await this.run(`get ${index}`);
     if (std.stderr) {
@@ -139,11 +138,11 @@ module.exports = class TonstorageCLI {
   }
 
   async getPeers(index) {
-    const HASH_REGEXP = /\s*torrent\s*(?<hash>[A-F0-9]+)\s*/i;
-    const DOWNLOADED_SPEED_REGEXP = /\s*download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
-    const UPLOAD_SPEED_REGEXP = /\s*upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const COUNT_REGEXP = /\s*peers:\s*(?<count>[0-9]+)\s*/i;
-    const PEER_REGEXP = /\s*(?<adnl>[\w0-9=/+]+)\s*(?<address>[0-9.:]+)\s*(?<downloadSpeed>[0-9]+\w+\/s)\s*(?<uploadSpeed>[0-9]+\w+\/s)\s*(?<ready>[0-9.%]+)\s*/i;
+    const HASH_REGEXP = /torrent\s*(?<hash>[A-F0-9]+)/i;
+    const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
+    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
+    const COUNT_REGEXP = /peers:\s*(?<count>[0-9]+)/i;
+    const PEER_REGEXP = /(?<adnl>[\w0-9=/+]+)\s*(?<address>[0-9.:]+)\s*(?<downloadSpeed>[0-9]+\w+\/s)\s*(?<uploadSpeed>[0-9]+\w+\/s)\s*(?<ready>[0-9.%]+)/i;
 
     const std = await this.run(`get-peers ${index}`);
     if (std.stderr) {
@@ -182,15 +181,15 @@ module.exports = class TonstorageCLI {
   }
 
   async create(path, description = null) {
-    const ID_REGEXP = /\s*id\s*=\s*(?<id>[0-9]+)\s*/i;
-    const HASH_REGEXP = /\s*hash\s*=\s*(?<hash>[A-F0-9]{64})\s*/i;
-    const UPLOAD_SPEED_REGEXP = /\s*upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const TOTAL_REGEXP = /\s*total\ssize:\s*(?<total>[0-9]+\w+)\s*/i;
+    const ID_REGEXP = /id\s*=\s*(?<id>[0-9]+)/i;
+    const HASH_REGEXP = /hash\s*=\s*(?<hash>[A-F0-9]{64})/i;
+    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
+    const TOTAL_REGEXP = /total\ssize:\s*(?<total>[0-9]+\w+)/i;
     const DESCRIPTION_REGEXP = /-----------------------------------\s*(?<description>[\s\S]*)\n-----------------------------------/i;
-    const DIR_NAME_REGEXP = /\s*dir\sname:\s(?<dirName>.+)\s*/i;
-    const ROOT_DIR_REGEXP = /\s*root\sdir:\s(?<rootDir>.+)\s*/i;
-    const COUNT_REGEXP = /\s*(?<count>[0-9]+)\sfiles:\s*/i;
-    const FILE_REGEXP = /\s*(?<index>[0-9]+):\s\((?<prior>[0-9]+)\)\s*(?<ready>[0-9]+\w+)\/(?<size>[0-9]+\w+)\s*(?<name>.+)\s*/i;
+    const DIR_NAME_REGEXP = /dir\sname:\s(?<dirName>.+)/i;
+    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
+    const COUNT_REGEXP = /(?<count>[0-9]+)\sfiles:/i;
+    const FILE_REGEXP = /(?<index>[0-9]+):\s\((?<prior>[0-9]+)\)\s*(?<ready>[0-9]+\w+)\/(?<size>[0-9]+\w+)\s*(?<name>.+)/i;
 
     const std = await this.run(`create ${path} ${description ? `-d '${description}'` : ''}`);
     if (std.stderr) {
@@ -238,8 +237,8 @@ module.exports = class TonstorageCLI {
   }
 
   async getMeta(index, path) {
-    const SIZE_REGEXP = /\s*saved\storrent\smeta\s\((?<size>[0-9]+\s\w+)\)\s*/i;
-    const SUCCESS_REGEXP = /\s*saved\storrent\smeta\s/i;
+    const SIZE_REGEXP = /saved\storrent\smeta\s\((?<size>[0-9]+\s\w+)\)/i;
+    const SUCCESS_REGEXP = /saved\storrent\smeta/i;
 
     const std = await this.run(`get-meta ${index} ${path}`);
     if (std.stderr) {
@@ -264,8 +263,8 @@ module.exports = class TonstorageCLI {
   }
 
   async addByHash(hash, options = { download: false, rootDir: null, partialFiles: [] }) {
-    const HASH_REGEXP = /\s*hash\s*=\s*(?<hash>[A-F0-9]{64})\s*/i;
-    const ROOT_DIR_REGEXP = /\s*root\sdir:\s(?<rootDir>.+)\s*/i;
+    const HASH_REGEXP = /hash\s*=\s*(?<hash>[A-F0-9]{64})/i;
+    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
 
     const std = await this.run(`add-by-hash ${hash} ${!options.download ? '--paused ' : ''}`
       + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
@@ -289,16 +288,16 @@ module.exports = class TonstorageCLI {
   }
 
   async addByMeta(path, options = { download: false, rootDir: null, partialFiles: [] }) {
-    const ID_REGEXP = /\s*id\s*=\s*(?<id>[0-9]+)\s*/i;
-    const HASH_REGEXP = /\s*hash\s*=\s*(?<hash>[A-F0-9]{64})\s*/i;
-    const DOWNLOADED_SPEED_REGEXP = /\s*download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
-    const UPLOAD_SPEED_REGEXP = /\s*upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const TOTAL_REGEXP = /\s*total\ssize:\s*(?<total>[0-9]+\w+)\s*/i;
+    const ID_REGEXP = /id\s*=\s*(?<id>[0-9]+)/i;
+    const HASH_REGEXP = /hash\s*=\s*(?<hash>[A-F0-9]{64})/i;
+    const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
+    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
+    const TOTAL_REGEXP = /total\ssize:\s*(?<total>[0-9]+\w+)/i;
     const DESCRIPTION_REGEXP = /-----------------------------------\s*(?<description>[\s\S]*)\n-----------------------------------/i;
-    const DIR_NAME_REGEXP = /\s*dir\sname:\s(?<dirName>.+)\s*/i;
-    const ROOT_DIR_REGEXP = /\s*root\sdir:\s(?<rootDir>.+)\s*/i;
-    const COUNT_REGEXP = /\s*(?<count>[0-9]+)\sfiles:\s*/i;
-    const FILE_REGEXP = /\s*(?<index>[0-9]+):\s\((?<prior>[0-9]+)\)\s*(?<ready>[0-9]+\w+)\/(?<size>[0-9]+\w+)\s*(?<name>.+)\s*/i;
+    const DIR_NAME_REGEXP = /dir\sname:\s(?<dirName>.+)/i;
+    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
+    const COUNT_REGEXP = /(?<count>[0-9]+)\sfiles:/i;
+    const FILE_REGEXP = /(?<index>[0-9]+):\s\((?<prior>[0-9]+)\)\s*(?<ready>[0-9]+\w+)\/(?<size>[0-9]+\w+)\s*(?<name>.+)/i;
 
     const std = await this.run(`add-by-meta ${path} ${!options.download ? '--paused ' : ''}`
       + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
@@ -351,7 +350,7 @@ module.exports = class TonstorageCLI {
   }
 
   async remove(index, options = { removeFiles: false }) {
-    const SUCCESS_REGEXP = /\s*success\s*/i;
+    const SUCCESS_REGEXP = /success/i;
 
     const std = await this.run(`remove ${index}${options.removeFiles ? ' --remove-files' : ''}`);
     if (std.stderr) {
@@ -374,7 +373,7 @@ module.exports = class TonstorageCLI {
   }
 
   async downloadPause(index) {
-    const SUCCESS_REGEXP = /\s*success\s*/i;
+    const SUCCESS_REGEXP = /success/i;
 
     const std = await this.run(`download-pause ${index}`);
     if (std.stderr) {
@@ -397,7 +396,7 @@ module.exports = class TonstorageCLI {
   }
 
   async downloadResume(index) {
-    const SUCCESS_REGEXP = /\s*success\s*/i;
+    const SUCCESS_REGEXP = /success/i;
 
     const std = await this.run(`download-resume ${index}`);
     if (std.stderr) {
@@ -420,7 +419,7 @@ module.exports = class TonstorageCLI {
   }
 
   async priorityAll(index, priority) {
-    const SUCCESS_REGEXP = /\s*priority\swas\sset\s*/i;
+    const SUCCESS_REGEXP = /priority\swas\sset/i;
 
     const std = await this.run(`priority-all ${index} ${priority}`);
     if (std.stderr) {
@@ -443,7 +442,7 @@ module.exports = class TonstorageCLI {
   }
 
   async priorityName(index, name, priority) {
-    const SUCCESS_REGEXP = /\s*priority\swas\sset\s*/i;
+    const SUCCESS_REGEXP = /priority\swas\sset/i;
 
     const std = await this.run(`priority-name ${index} ${name} ${priority}`);
     if (std.stderr) {
@@ -466,7 +465,7 @@ module.exports = class TonstorageCLI {
   }
 
   async priorityIdx(index, fileId, priority) {
-    const SUCCESS_REGEXP = /\s*priority\swas\sset\s*/i;
+    const SUCCESS_REGEXP = /priority\swas\sset/i;
 
     const std = await this.run(`priority-idx ${index} ${fileId} ${priority}`);
     if (std.stderr) {
