@@ -18,7 +18,7 @@ module.exports = class TonstorageCLI {
         `${this.bin} -v 0 -I ${this.host} -k ${this.database}/cli-keys/client -p ${this.database}/cli-keys/server.pub --cmd "${cmd}"`,
         { timeout: options.timeout ? options.timeout : this.timeout },
       );
-      console.log(std);
+      // console.log(std);
 
       return { stdout: std.stdout, stderr: '' };
     } catch (e) {
