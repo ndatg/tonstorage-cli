@@ -76,6 +76,7 @@ const TonstorageCLI = require('../src');
 
   // const getProviderInfo = await CLI.getProviderInfo();
   // console.log(getProviderInfo);
+  // console.log(getProviderInfo.result);
 
   // const setProviderConfig = await CLI.setProviderConfig(98, 300000000000);
   // console.log(setProviderConfig);
@@ -93,4 +94,16 @@ const TonstorageCLI = require('../src');
   //   '0:E1BBE4E96C479A446E6B1E337D68A30FF356DD1399A4ED03AD310CBB250F854E',
   // );
   // console.log(newContractMessage);
+
+  // const closeContract = await CLI.closeContract('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090');
+  // console.log(closeContract);
+
+  // const withdraw = await CLI.withdraw('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090');
+  // console.log(withdraw);
+
+  // const withdrawAll = await CLI.withdrawAll();
+  // console.log(withdrawAll);
+
+  // const sendCoins = await CLI.sendCoins('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090', 1000000000, 'text');
+  // console.log(sendCoins);
 })();

@@ -18,6 +18,7 @@ module.exports = class TonstorageCLI {
         `${this.bin} -v 0 -I ${this.host} -k ${this.database}/cli-keys/client -p ${this.database}/cli-keys/server.pub --cmd "${cmd}"`,
         { timeout: options.timeout ? options.timeout : this.timeout },
       );
+      console.log(std);
 
       return { stdout: std.stdout, stderr: '' };
     } catch (e) {
@@ -515,8 +516,10 @@ module.exports = class TonstorageCLI {
     const ADDRESS_REGEXP = /storage\sprovider\s(?<address>[-1|0]:[A-F0-9]{64})/i;
     const CONTRACTS_REGEXP = /storage\scontracts:\s(?<count>[0-9]+)\s\/\s(?<limit>[0-9]+)/i;
     const SIZE_REGEXP = /total\ssize:\s(?<size>[0-9]+\w+)\s\/\s(?<total>[0-9]+\w+)/i;
+    const BALANCE_REGEXP = /main\scontract\sbalance:\s(?<balance>[0-9.]+)\ston/i;
+    const CONTRACT_REGEXP = /(?<address>[-1|0]:[A-F0-9]{64})\s*(?<hash>[A-F0-9]{64})\s*(?<date>.+)\s\s(?<size>[0-9]+\w+)\s*(?<state>\w+)\s*(?<clientBalance>[0-9.]+)\s*(?<contractBalance>[0-9.]+)/i;
 
-    const std = await this.run('get-provider-info');
+    const std = await this.run('get-provider-info --contracts --balances');
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
       return { ok: false, error, code: 400 };
@@ -525,19 +528,31 @@ module.exports = class TonstorageCLI {
     const addressMatch = ADDRESS_REGEXP.exec(std.stdout);
     const contractsMatch = CONTRACTS_REGEXP.exec(std.stdout);
     const sizeMatch = SIZE_REGEXP.exec(std.stdout);
+    const balanceMatch = BALANCE_REGEXP.exec(std.stdout);
+
+    const contracts = [];
+    const lines = std.stdout.split('\n');
+    for (let i = 0; i < lines.length; i += 1) {
+      const line = lines[i];
+      const contractMatch = CONTRACT_REGEXP.exec(line);
+      if (contractMatch && contractMatch.groups) {
+        contracts.push({
+          ...contractMatch.groups,
+          date: +new Date(contractMatch.groups.date),
+        });
+      }
+    }
 
     return {
       ok: true,
       result: {
         address: (addressMatch && addressMatch.groups) ? addressMatch.groups.address : null,
-        contracts: {
-          count: (contractsMatch && contractsMatch.groups) ? parseInt(contractsMatch.groups.count, 10) : null,
-          limit: (contractsMatch && contractsMatch.groups) ? parseInt(contractsMatch.groups.limit, 10) : null,
-        },
-        size: {
-          size: (sizeMatch && sizeMatch.groups) ? sizeMatch.groups.size : null,
-          total: (sizeMatch && sizeMatch.groups) ? sizeMatch.groups.total : null,
-        },
+        size: (sizeMatch && sizeMatch.groups) ? sizeMatch.groups.size : null,
+        total: (sizeMatch && sizeMatch.groups) ? sizeMatch.groups.total : null,
+        balance: (balanceMatch && balanceMatch.groups) ? parseFloat(balanceMatch.groups.balance) : null,
+        contractsCount: (contractsMatch && contractsMatch.groups) ? parseInt(contractsMatch.groups.count, 10) : null,
+        contractsLimit: (contractsMatch && contractsMatch.groups) ? parseInt(contractsMatch.groups.limit, 10) : null,
+        contracts,
       },
       code: 0,
     };
@@ -566,14 +581,14 @@ module.exports = class TonstorageCLI {
     };
   }
 
-  async getProviderParams(address = null) {
+  async getProviderParams(providerAddress = null) {
     const ACCEPT_REGEXP = /accept\snew\scontracts:\s(?<accept>\w+)/i;
     const RATE_REGEXP = /rate\s\(nanoton\sper\sday\*mb\):\s(?<rate>[0-9]+)/i;
     const MAX_SPAN_REGEXP = /max\sspan:\s(?<maxSpan>[0-9]+)/i;
     const MIN_FILE_SIZE_REGEXP = /min\sfile\ssize:\s(?<minFileSize>[0-9]+)/i;
     const MAX_FILE_SIZE_REGEXP = /max\sfile\ssize:\s(?<maxFileSize>[0-9]+)/i;
 
-    const std = await this.run(`get-provider-params${address ? ` ${address}` : ''}`);
+    const std = await this.run(`get-provider-params${providerAddress ? ` ${providerAddress}` : ''}`);
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
       return { ok: false, error, code: 400 };
@@ -621,11 +636,11 @@ module.exports = class TonstorageCLI {
     };
   }
 
-  async newContractMessage(torrent, file, queryId, address) {
+  async newContractMessage(torrent, file, queryId, providerAddress) {
     const RATE_REGEXP = /rate\s\(nanoton\sper\smb\*day\):\s(?<rate>[0-9]+)/i;
     const MAX_SPAN_REGEXP = /max\sspan:\s(?<maxSpan>[0-9]+)/i;
 
-    const std = await this.run(`new-contract-message ${torrent} ${file} --query-id ${queryId} --provider ${address}`);
+    const std = await this.run(`new-contract-message ${torrent} ${file} --query-id ${queryId} --provider ${providerAddress}`);
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
       return { ok: false, error, code: 400 };
@@ -640,6 +655,98 @@ module.exports = class TonstorageCLI {
         file,
         rate: (rateMatch && rateMatch.groups) ? parseInt(rateMatch.groups.rate, 10) : null,
         maxSpan: (maxSpanMatch && maxSpanMatch.groups) ? parseInt(maxSpanMatch.groups.maxSpan, 10) : null,
+      },
+      code: 0,
+    };
+  }
+
+  async closeContract(address) {
+    const SUCCESS_REGEXP = /closing\sstorage\scontract/i;
+
+    const std = await this.run(`close-contract ${address}`, { timeout: 30000 });
+    if (std.stderr) {
+      const error = std.stderr.replaceAll('/n', '');
+      return { ok: false, error, code: 400 };
+    }
+
+    const successMatch = SUCCESS_REGEXP.test(std.stdout);
+    if (!successMatch) {
+      return { ok: false, error: 'error: unknown error', code: 401 };
+    }
+
+    return {
+      ok: true,
+      result: {
+        message: 'success',
+      },
+      code: 0,
+    };
+  }
+
+  async withdraw(address) {
+    const SUCCESS_REGEXP = /bounty\swas\swithdrawn/i;
+
+    const std = await this.run(`withdraw ${address}`, { timeout: 30000 });
+    if (std.stderr) {
+      const error = std.stderr.replaceAll('/n', '');
+      return { ok: false, error, code: 400 };
+    }
+
+    const successMatch = SUCCESS_REGEXP.test(std.stdout);
+    if (!successMatch) {
+      return { ok: false, error: 'error: unknown error', code: 401 };
+    }
+
+    return {
+      ok: true,
+      result: {
+        message: 'success',
+      },
+      code: 0,
+    };
+  }
+
+  async withdrawAll() {
+    const SUCCESS_REGEXP = /bounty\swas\swithdrawn/i;
+
+    const std = await this.run('withdraw-all', { timeout: 30000 });
+    if (std.stderr) {
+      const error = std.stderr.replaceAll('/n', '');
+      return { ok: false, error, code: 400 };
+    }
+
+    const successMatch = SUCCESS_REGEXP.test(std.stdout);
+    if (!successMatch) {
+      return { ok: false, error: 'error: unknown error', code: 401 };
+    }
+
+    return {
+      ok: true,
+      result: {
+        message: 'success',
+      },
+      code: 0,
+    };
+  }
+
+  async sendCoins(address, amount, options = { message: null }) {
+    const SUCCESS_REGEXP = /internal\smessage\swas\ssent/i;
+
+    const std = await this.run(`send-coins ${address} ${amount}${options.message ? ` --message ${options.message}` : ''}`, { timeout: 30000 });
+    if (std.stderr) {
+      const error = std.stderr.replaceAll('/n', '');
+      return { ok: false, error, code: 400 };
+    }
+
+    const successMatch = SUCCESS_REGEXP.test(std.stdout);
+    if (!successMatch) {
+      return { ok: false, error: 'error: unknown error', code: 401 };
+    }
+
+    return {
+      ok: true,
+      result: {
+        message: 'success',
       },
       code: 0,
     };
