@@ -731,7 +731,7 @@ module.exports = class TonstorageCLI {
   async sendCoins(address, amount, options = { message: null }) {
     const SUCCESS_REGEXP = /internal\smessage\swas\ssent/i;
 
-    const std = await this.run(`send-coins ${address} ${amount}${options.message ? ` --message ${options.message}` : ''}`, { timeout: 30000 });
+    const std = await this.run(`send-coins ${address} ${amount}${options.message ? ` --message '${options.message}'` : ''}`, { timeout: 30000 });
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
       return { ok: false, error, code: 400 };
