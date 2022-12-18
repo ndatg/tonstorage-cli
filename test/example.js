@@ -70,4 +70,27 @@ const TonstorageCLI = require('../src');
 
   // const getMeta = await CLI.getMeta('6E3BEFFB4EF4B695BF5033EF734F58D1D497ABDA891FAEB060F7B979FA2321A7', '/root/example3');
   // console.log(getMeta);
+
+  // const deployProvider = await CLI.deployProvider();
+  // console.log(deployProvider);
+
+  // const getProviderInfo = await CLI.getProviderInfo();
+  // console.log(getProviderInfo);
+
+  // const setProviderConfig = await CLI.setProviderConfig(98, 300000000000);
+  // console.log(setProviderConfig);
+
+  // const getProviderParams = await CLI.getProviderParams('0:E1BBE4E96C479A446E6B1E337D68A30FF356DD1399A4ED03AD310CBB250F854E');
+  // console.log(getProviderParams);
+
+  // const setProviderParams = await CLI.setProviderParams(1, 1000000000, 86400, 1024, 1000000000);
+  // console.log(setProviderParams);
+
+  // const newContractMessage = await CLI.newContractMessage(
+  //   '91AE09E48F9AB5061D1CBC8BBE314F8152221472DFEAF8C18C14CB83B5D6D046',
+  //   '/root/file',
+  //   0,
+  //   '0:E1BBE4E96C479A446E6B1E337D68A30FF356DD1399A4ED03AD310CBB250F854E',
+  // );
+  // console.log(newContractMessage);
 })();
