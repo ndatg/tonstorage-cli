@@ -50,7 +50,7 @@ const TonstorageCLI = require('../src');
   // console.log(addByMeta);
   // console.log(addByMeta.result);
 
-  // const remove = await CLI.remove('EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F');
+  // const remove = await CLI.remove('824B91A8A183DBE7971FAF1543F632D04C61A54428AFEF6362EB9A45DA5D6E54', { removeFiles: false });
   // console.log(remove);
 
   // const pause = await CLI.downloadPause('EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F');

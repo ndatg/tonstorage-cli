@@ -350,10 +350,10 @@ module.exports = class TonstorageCLI {
     };
   }
 
-  async remove(index) {
+  async remove(index, options = { removeFiles: false }) {
     const SUCCESS_REGEXP = /\s*success\s*/i;
 
-    const std = await this.run(`remove ${index}`);
+    const std = await this.run(`remove ${index}${options.removeFiles ? ' --remove-files' : ''}`);
     if (std.stderr) {
       const error = std.stderr.replaceAll('/n', '');
       return { ok: false, error, code: 400 };
