@@ -78,7 +78,7 @@ module.exports = class TonstorageCLI {
   }
 
   async get(index) {
-    const ID_REGEXP = /id\s*=\s*(?<id>[0-9]+)/i;
+    const ID_REGEXP = /index\s*=\s*(?<id>[0-9]+)/i;
     const HASH_REGEXP = /bagid\s*=\s*(?<hash>[A-F0-9]{64})/i;
     const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
     const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
