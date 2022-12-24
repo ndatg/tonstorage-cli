@@ -20,10 +20,10 @@ const TonstorageCLI = require('../src');
   // console.log(list);
   // console.log(list.result);
 
-  // const get = await CLI.get('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
-  // console.log(get);
-  // console.log(get.result);
-  //
+  const get = await CLI.get('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+  console.log(get);
+  console.log(get.result);
+
   // const getPeers = await CLI.getPeers('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
   // console.log(getPeers);
   // console.log(getPeers.result);
