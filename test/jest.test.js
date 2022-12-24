@@ -38,7 +38,7 @@ describe('tonstorage-cli unit tests', () => {
     const tempFilePath = path.resolve(__dirname, 'temp', 'readme.md');
     await fsPromises.writeFile(tempFilePath, 'hello world!', { encoding: 'utf-8' });
 
-    const create = await CLI.create(tempFilePath, 'readme.md file');
+    const create = await CLI.create(tempFilePath, { upload: true, description: 'readme.md file' });
     hash = create.result.hash;
 
     expect(create.result.files[0]).toEqual({
@@ -94,6 +94,7 @@ describe('tonstorage-cli unit tests', () => {
   test('addByHash', async () => {
     const addByHash = await CLI.addByHash('EFCB1F320FA71B3DBF4106CDCD6C543C672EA1C51C595A2856BE60AA62DBC76F', {
       download: false,
+      upload: true,
       rootDir: null,
       partialFiles: [],
     });
@@ -117,6 +118,7 @@ describe('tonstorage-cli unit tests', () => {
   test('addByMeta', async () => {
     await CLI.remove(hash);
     const addByMeta = await CLI.addByMeta(path.join(tempFolderPath, 'meta'), {
+      upload: true,
       download: false,
       rootDir: null,
       partialFiles: [],
@@ -128,7 +130,7 @@ describe('tonstorage-cli unit tests', () => {
         id: 0,
         hash,
         downloadSpeed: null,
-        uploadSpeed: '0B/s',
+        uploadSpeed: null,
         total: '69B',
         description: 'readme.md file',
         dirName: null,
