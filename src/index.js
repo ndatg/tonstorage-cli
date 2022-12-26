@@ -1,6 +1,6 @@
 const util = require('util');
 const childProcess = require('child_process');
-const { join } = require('path');
+const { resolve } = require('path');
 const { tmpdir } = require('os');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -409,7 +409,7 @@ module.exports = class TonstorageCLI {
     const RATE_REGEXP = /rate\s\(nanoton\sper\smb\*day\):\s(?<rate>[0-9]+)/i;
     const MAX_SPAN_REGEXP = /max\sspan:\s(?<maxSpan>[0-9]+)/i;
 
-    const tempFilePath = join(tmpdir(), crypto.randomBytes(6).readUIntLE(0, 6).toString(36));
+    const tempFilePath = resolve(tmpdir(), crypto.randomBytes(6).readUIntLE(0, 6).toString(36));
 
     const cmd = `new-contract-message ${torrent} ${tempFilePath} --query-id ${queryId} --provider ${providerAddress}`;
     const std = await this.run(cmd, { timeout: 120000 });
