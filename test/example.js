@@ -28,7 +28,7 @@ const TonstorageCLI = require('../src');
   // console.log(getPeers);
   // console.log(getPeers.result);
 
-  // const create = await CLI.create('/root/temp', { upload: false, description: 'my test qweqweqweqwe description' });
+  // const create = await CLI.create('/root/temp', { upload: false, description: 'my test description' });
   // console.log(create);
   // console.log(create.result);
 
@@ -42,7 +42,7 @@ const TonstorageCLI = require('../src');
   // console.log(addByHash);
   // console.log(addByHash.result);
 
-  // const addByMeta = await CLI.addByMeta('/root/readme-meta', {
+  // const addByMeta = await CLI.addByMeta('/root/meta-file', {
   //   download: false,
   //   upload: false,
   //   partialFiles: [
@@ -55,22 +55,28 @@ const TonstorageCLI = require('../src');
   // const remove = await CLI.remove('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', { removeFiles: false });
   // console.log(remove);
 
-  // const pause = await CLI.downloadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
-  // console.log(pause);
-
-  // const resume = await CLI.downloadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
-  // console.log(resume);
+  // const downloadPause = await CLI.downloadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+  // console.log(downloadPause);
+  //
+  // const downloadResume = await CLI.downloadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+  // console.log(downloadResume);
+  //
+  // const uploadPause = await CLI.uploadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+  // console.log(uploadPause);
+  //
+  // const uploadResume = await CLI.uploadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+  // console.log(uploadResume);
 
   // const priorityAll = await CLI.priorityAll('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 3);
   // console.log(priorityAll);
-
+  //
   // const priorityName = await CLI.priorityName('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 'readme.md', 4);
   // console.log(priorityName);
-
+  //
   // const priorityIdx = await CLI.priorityIdx('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 0, 5);
   // console.log(priorityIdx);
 
-  // const getMeta = await CLI.getMeta('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', '/root/readme-meta');
+  // const getMeta = await CLI.getMeta('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', '/root/meta-file');
   // console.log(getMeta);
 
   // const deployProvider = await CLI.deployProvider();
@@ -85,13 +91,13 @@ const TonstorageCLI = require('../src');
 
   // const getProviderParams = await CLI.getProviderParams('0:1FE4669208B1BEB10DFA97B0DFE973D90B07DF9D7754563440266B2725D50E53');
   // console.log(getProviderParams);
-
+  //
   // const setProviderParams = await CLI.setProviderParams(1, 1000000000, 86400, 1024, 1000000000);
   // console.log(setProviderParams);
 
   // const newContractMessage = await CLI.newContractMessage(
   //   'A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B',
-  //   '/root/file',
+  //   '/root/contract-message-file',
   //   0,
   //   '0:1FE4669208B1BEB10DFA97B0DFE973D90B07DF9D7754563440266B2725D50E53',
   // );

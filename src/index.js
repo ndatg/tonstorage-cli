@@ -34,211 +34,75 @@ module.exports = class TonstorageCLI {
 
       stderr.push(e.stderr);
 
-      return { stdout: '', stderr: stderr.join('/n') };
+      return { stdout: '', stderr: stderr.join('/n').replaceAll('/n', ' ').trim() };
+    }
+  }
+
+  async response(cmd) {
+    const std = await this.run(cmd);
+    if (std.stderr) {
+      return { ok: false, error: std.stderr, code: 400 };
+    }
+
+    try {
+      return { ok: true, result: JSON.parse(std.stdout), code: 0 };
+    } catch (e) {
+      return { ok: false, error: `error: ${e.message}`, code: 400 };
     }
   }
 
   // cli
   async list() {
-    const COUNT_REGEXP = /(?<count>[0-9]+)\sbags/i;
-    const TORRENT_REGEXP = /(?<id>[0-9]+)\s*(?<hash>[A-F0-9]{64})\s*(?<description>.*)?\s(?<downloaded>[0-9]+\w+)\/([0-9]+\w+|[?+]*)\s*(?<total>[0-9]\w+|[?]+)\s*(?<status>[0-9]+\w+\/s|completed|paused)/i;
+    const cmd = 'list --json';
 
-    const cmd = 'list --hashes';
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const countMatch = COUNT_REGEXP.exec(std.stdout);
-
-    const torrents = [];
-    const lines = std.stdout.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const torrentMatch = TORRENT_REGEXP.exec(line);
-      if (torrentMatch && torrentMatch.groups) {
-        torrents.push({
-          ...torrentMatch.groups,
-          id: parseInt(torrentMatch.groups.id, 10),
-          status: torrentMatch.groups.status,
-          description: torrentMatch.groups.description ? torrentMatch.groups.description.trim() : null,
-        });
-      }
-    }
-
-    return {
-      ok: true,
-      result: {
-        count: (countMatch && countMatch.groups) ? parseInt(countMatch.groups.count, 10) : null,
-        torrents,
-      },
-      code: 0,
-    };
+    const res = await this.response(cmd);
+    return res;
   }
 
   async get(index) {
-    const ID_REGEXP = /index\s*=\s*(?<id>[0-9]+)/i;
-    const HASH_REGEXP = /bagid\s*=\s*(?<hash>[A-F0-9]{64})/i;
-    const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
-    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const TOTAL_REGEXP = /total\ssize:\s*(?<total>[0-9]+\w+)/i;
-    const DESCRIPTION_REGEXP = /-----------------------------------\s*(?<description>[\s\S]*)\n-----------------------------------/i;
-    const DIR_NAME_REGEXP = /dir\sname:\s(?<dirName>.+)/i;
-    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
-    const COUNT_REGEXP = /(?<count>[0-9]+)\sfiles/i;
-    const FILE_REGEXP = /(?<index>[0-9]+):\s\((?<prior>[0-9|-]+)\)\s*(?<ready>[0-9|-]+\w*)\/(?<size>[0-9]+\w+)\s*\+?\s*(?<name>.+)/i;
+    const cmd = `get ${index} --json`;
 
-    const cmd = `get ${index}`;
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const idMatch = ID_REGEXP.exec(std.stdout);
-    const hashMatch = HASH_REGEXP.exec(std.stdout);
-    const downloadSpeedMatch = DOWNLOADED_SPEED_REGEXP.exec(std.stdout);
-    const uploadSpeedMatch = UPLOAD_SPEED_REGEXP.exec(std.stdout);
-    const totalMatch = TOTAL_REGEXP.exec(std.stdout);
-    const descriptionMatch = DESCRIPTION_REGEXP.exec(std.stdout);
-    const dirNameMatch = DIR_NAME_REGEXP.exec(std.stdout);
-    const rootDirMatch = ROOT_DIR_REGEXP.exec(std.stdout);
-    const countMatch = COUNT_REGEXP.exec(std.stdout);
-
-    const files = [];
-    const lines = std.stdout.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const fileMatch = FILE_REGEXP.exec(line);
-      if (fileMatch && fileMatch.groups) {
-        files.push({
-          ...fileMatch.groups,
-          index: parseInt(fileMatch.groups.index, 10),
-          prior: fileMatch.groups.prior !== '---' ? parseInt(fileMatch.groups.prior, 10) : null,
-          ready: fileMatch.groups.ready !== '---' ? fileMatch.groups.ready : null,
-        });
-      }
-    }
-
-    return {
-      ok: true,
-      result: {
-        id: (idMatch && idMatch.groups) ? parseInt(idMatch.groups.id, 10) : null,
-        hash: (hashMatch && hashMatch.groups) ? hashMatch.groups.hash : null,
-        downloadSpeed: (downloadSpeedMatch && downloadSpeedMatch.groups) ? downloadSpeedMatch.groups.downloadSpeed : null,
-        uploadSpeed: (uploadSpeedMatch && uploadSpeedMatch.groups) ? uploadSpeedMatch.groups.uploadSpeed : null,
-        total: (totalMatch && totalMatch.groups) ? totalMatch.groups.total : null,
-        description: (descriptionMatch && descriptionMatch.groups) ? descriptionMatch.groups.description : null,
-        dirName: (dirNameMatch && dirNameMatch.groups) ? dirNameMatch.groups.dirName : null,
-        rootDir: (rootDirMatch && rootDirMatch.groups) ? rootDirMatch.groups.rootDir : null,
-        count: (countMatch && countMatch.groups) ? parseInt(countMatch.groups.count, 10) : null,
-        files,
-      },
-      code: 0,
-    };
+    const res = await this.response(cmd);
+    return res;
   }
 
   async getPeers(index) {
-    const HASH_REGEXP = /bagid\s*(?<hash>[A-F0-9]+)/i;
-    const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
-    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const COUNT_REGEXP = /peers:\s*(?<count>[0-9]+)/i;
-    const PEER_REGEXP = /(?<adnl>[\w0-9=/+]+)\s*(?<address>[0-9.:]+)\s*(?<downloadSpeed>[0-9]+\w+\/s)\s*(?<uploadSpeed>[0-9]+\w+\/s)\s*(?<ready>[0-9.%]+)/i;
+    const cmd = `get-peers ${index} --json`;
 
-    const cmd = `get-peers ${index}`;
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const hashMatch = HASH_REGEXP.exec(std.stdout);
-    const downloadSpeedMatch = DOWNLOADED_SPEED_REGEXP.exec(std.stdout);
-    const uploadSpeedMatch = UPLOAD_SPEED_REGEXP.exec(std.stdout);
-    const countMatch = COUNT_REGEXP.exec(std.stdout);
-
-    const peers = [];
-    const lines = std.stdout.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const fileMatch = PEER_REGEXP.exec(line);
-      if (fileMatch && fileMatch.groups) {
-        peers.push({
-          ...fileMatch.groups,
-        });
-      }
-    }
-
-    return {
-      ok: true,
-      result: {
-        hash: (hashMatch && hashMatch.groups) ? hashMatch.groups.hash : null,
-        downloadSpeed: (downloadSpeedMatch && downloadSpeedMatch.groups) ? downloadSpeedMatch.groups.downloadSpeed : null,
-        uploadSpeed: (uploadSpeedMatch && uploadSpeedMatch.groups) ? uploadSpeedMatch.groups.uploadSpeed : null,
-        count: (countMatch && countMatch.groups) ? parseInt(countMatch.groups.count, 10) : null,
-        peers,
-      },
-      code: 0,
-    };
+    const res = await this.response(cmd);
+    return res;
   }
 
   async create(path, options = { upload: true, description: null }) {
-    const ID_REGEXP = /index\s*=\s*(?<id>[0-9]+)/i;
-    const HASH_REGEXP = /bagid\s*=\s*(?<hash>[A-F0-9]{64})/i;
-    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const TOTAL_REGEXP = /total\ssize:\s*(?<total>[0-9]+\w+)/i;
-    const DESCRIPTION_REGEXP = /-----------------------------------\s*(?<description>[\s\S]*)\n-----------------------------------/i;
-    const DIR_NAME_REGEXP = /dir\sname:\s(?<dirName>.+)/i;
-    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
-    const COUNT_REGEXP = /(?<count>[0-9]+)\sfiles/i;
-    const FILE_REGEXP = /(?<index>[0-9]+):\s\((?<prior>[0-9|-]+)\)\s*(?<ready>[0-9|-]+\w*)\/(?<size>[0-9]+\w+)\s*\+?\s*(?<name>.+)/i;
-
-    const cmd = `create ${path} ${!options.upload ? '--no-upload ' : ''}`
+    const cmd = `create ${path} --json ${!options.upload ? '--no-upload ' : ''}`
       + `${options.description ? `-d '${options.description}'` : ''}`;
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
 
-    const idMatch = ID_REGEXP.exec(std.stdout);
-    const hashMatch = HASH_REGEXP.exec(std.stdout);
-    const uploadSpeedMatch = UPLOAD_SPEED_REGEXP.exec(std.stdout);
-    const totalMatch = TOTAL_REGEXP.exec(std.stdout);
-    const descriptionMatch = DESCRIPTION_REGEXP.exec(std.stdout);
-    const dirNameMatch = DIR_NAME_REGEXP.exec(std.stdout);
-    const rootDirMatch = ROOT_DIR_REGEXP.exec(std.stdout);
-    const countMatch = COUNT_REGEXP.exec(std.stdout);
-    const files = [];
-    const lines = std.stdout.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const fileMatch = FILE_REGEXP.exec(line);
-      if (fileMatch && fileMatch.groups) {
-        files.push({
-          ...fileMatch.groups,
-          index: parseInt(fileMatch.groups.index, 10),
-          prior: parseInt(fileMatch.groups.prior, 10),
-        });
-      }
-    }
+    const res = await this.response(cmd);
+    return res;
+  }
 
-    return {
-      ok: true,
-      result: {
-        id: (idMatch && idMatch.groups) ? parseInt(idMatch.groups.id, 10) : null,
-        hash: (hashMatch && hashMatch.groups) ? hashMatch.groups.hash : null,
-        uploadSpeed: (uploadSpeedMatch && uploadSpeedMatch.groups) ? uploadSpeedMatch.groups.uploadSpeed : null,
-        total: (totalMatch && totalMatch.groups) ? totalMatch.groups.total : null,
-        description: (descriptionMatch && descriptionMatch.groups) ? descriptionMatch.groups.description : null,
-        dirName: (dirNameMatch && dirNameMatch.groups) ? dirNameMatch.groups.dirName : null,
-        rootDir: (rootDirMatch && rootDirMatch.groups) ? rootDirMatch.groups.rootDir : null,
-        count: (countMatch && countMatch.groups) ? parseInt(countMatch.groups.count, 10) : null,
-        files,
-      },
-      code: 0,
-    };
+  async addByHash(hash, options = {
+    download: false, upload: true, rootDir: null, partialFiles: [],
+  }) {
+    const cmd = `add-by-hash --json ${hash} ${!options.upload ? '--no-upload ' : ''}`
+      + `${!options.download ? '--paused ' : ''}`
+      + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
+      + `${options.partialFiles && options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`;
+
+    const res = await this.response(cmd);
+    return res;
+  }
+
+  async addByMeta(path, options = {
+    download: false, upload: true, rootDir: null, partialFiles: [],
+  }) {
+    const cmd = `add-by-meta --json ${path} ${!options.upload ? '--no-upload ' : ''}`
+      + `${!options.download ? '--paused ' : ''}`
+      + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
+      + `${options.partialFiles && options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`;
+
+    const res = await this.response(cmd);
+    return res;
   }
 
   async getMeta(index, path) {
@@ -268,109 +132,13 @@ module.exports = class TonstorageCLI {
     };
   }
 
-  async addByHash(hash, options = {
-    download: false, upload: true, rootDir: null, partialFiles: [],
-  }) {
-    const HASH_REGEXP = /bagid\s*=\s*(?<hash>[A-F0-9]{64})/i;
-    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
-
-    const cmd = `add-by-hash ${hash} ${!options.upload ? '--no-upload ' : ''}`
-      + `${!options.download ? '--paused ' : ''}`
-      + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
-      + `${options.partialFiles && options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`;
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const hashMatch = HASH_REGEXP.exec(std.stdout);
-    const rootDirMatch = ROOT_DIR_REGEXP.exec(std.stdout);
-
-    return {
-      ok: true,
-      result: {
-        hash: (hashMatch && hashMatch.groups) ? hashMatch.groups.hash : null,
-        rootDir: (rootDirMatch && rootDirMatch.groups) ? rootDirMatch.groups.rootDir : null,
-      },
-      code: 0,
-    };
-  }
-
-  async addByMeta(path, options = {
-    download: false, upload: true, rootDir: null, partialFiles: [],
-  }) {
-    const ID_REGEXP = /index\s*=\s*(?<id>[0-9]+)/i;
-    const HASH_REGEXP = /bagid\s*=\s*(?<hash>[A-F0-9]{64})/i;
-    const DOWNLOADED_SPEED_REGEXP = /download\sspeed:\s*(?<downloadSpeed>[0-9]+\w+\/s)/i;
-    const UPLOAD_SPEED_REGEXP = /upload\sspeed:\s*(?<uploadSpeed>[0-9]+\w+\/s)/i;
-    const TOTAL_REGEXP = /total\ssize:\s*(?<total>[0-9]+\w+)/i;
-    const DESCRIPTION_REGEXP = /-----------------------------------\s*(?<description>[\s\S]*)\n-----------------------------------/i;
-    const DIR_NAME_REGEXP = /dir\sname:\s(?<dirName>.+)/i;
-    const ROOT_DIR_REGEXP = /root\sdir:\s(?<rootDir>.+)/i;
-    const COUNT_REGEXP = /(?<count>[0-9]+)\sfiles/i;
-    const FILE_REGEXP = /(?<index>[0-9]+):\s\((?<prior>[0-9|-]+)\)\s*(?<ready>[0-9|-]+\w*)\/(?<size>[0-9]+\w+)\s*\+?\s*(?<name>.+)/i;
-
-    const cmd = `add-by-meta ${path} ${!options.upload ? '--no-upload ' : ''}`
-      + `${!options.download ? '--paused ' : ''}`
-      + `${options.rootDir ? `-d ${options.rootDir} ` : ''}`
-      + `${options.partialFiles && options.partialFiles.length > 0 ? `--partial ${options.partialFiles.join(' ')}` : ''}`;
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const idMatch = ID_REGEXP.exec(std.stdout);
-    const hashMatch = HASH_REGEXP.exec(std.stdout);
-    const downloadSpeedMatch = DOWNLOADED_SPEED_REGEXP.exec(std.stdout);
-    const uploadSpeedMatch = UPLOAD_SPEED_REGEXP.exec(std.stdout);
-    const totalMatch = TOTAL_REGEXP.exec(std.stdout);
-    const descriptionMatch = DESCRIPTION_REGEXP.exec(std.stdout);
-    const dirNameMatch = DIR_NAME_REGEXP.exec(std.stdout);
-    const rootDirMatch = ROOT_DIR_REGEXP.exec(std.stdout);
-    const countMatch = COUNT_REGEXP.exec(std.stdout);
-
-    const files = [];
-    const lines = std.stdout.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const fileMatch = FILE_REGEXP.exec(line);
-      if (fileMatch && fileMatch.groups) {
-        files.push({
-          ...fileMatch.groups,
-          index: parseInt(fileMatch.groups.index, 10),
-          prior: parseInt(fileMatch.groups.prior, 10),
-        });
-      }
-    }
-
-    return {
-      ok: true,
-      result: {
-        id: (idMatch && idMatch.groups) ? parseInt(idMatch.groups.id, 10) : null,
-        hash: (hashMatch && hashMatch.groups) ? hashMatch.groups.hash : null,
-        downloadSpeed: (downloadSpeedMatch && downloadSpeedMatch.groups) ? downloadSpeedMatch.groups.downloadSpeed : null,
-        uploadSpeed: (uploadSpeedMatch && uploadSpeedMatch.groups) ? uploadSpeedMatch.groups.uploadSpeed : null,
-        total: (totalMatch && totalMatch.groups) ? totalMatch.groups.total : null,
-        description: (descriptionMatch && descriptionMatch.groups) ? descriptionMatch.groups.description : null,
-        dirName: (dirNameMatch && dirNameMatch.groups) ? dirNameMatch.groups.dirName : null,
-        rootDir: (rootDirMatch && rootDirMatch.groups) ? rootDirMatch.groups.rootDir : null,
-        count: (countMatch && countMatch.groups) ? parseInt(countMatch.groups.count, 10) : null,
-        files,
-      },
-      code: 0,
-    };
-  }
-
   async remove(index, options = { removeFiles: false }) {
     const SUCCESS_REGEXP = /success/i;
 
     const cmd = `remove ${index}${options.removeFiles ? ' --remove-files' : ''}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -393,8 +161,7 @@ module.exports = class TonstorageCLI {
     const cmd = `download-pause ${index}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -417,8 +184,53 @@ module.exports = class TonstorageCLI {
     const cmd = `download-resume ${index}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
+    }
+
+    const successMatch = SUCCESS_REGEXP.test(std.stdout);
+    if (!successMatch) {
+      return { ok: false, error: 'error: unknown error', code: 401 };
+    }
+
+    return {
+      ok: true,
+      result: {
+        message: 'success',
+      },
+      code: 0,
+    };
+  }
+
+  async uploadPause(index) {
+    const SUCCESS_REGEXP = /success/i;
+
+    const cmd = `upload-pause ${index}`;
+    const std = await this.run(cmd);
+    if (std.stderr) {
+      return { ok: false, error: std.stderr, code: 400 };
+    }
+
+    const successMatch = SUCCESS_REGEXP.test(std.stdout);
+    if (!successMatch) {
+      return { ok: false, error: 'error: unknown error', code: 401 };
+    }
+
+    return {
+      ok: true,
+      result: {
+        message: 'success',
+      },
+      code: 0,
+    };
+  }
+
+  async uploadResume(index) {
+    const SUCCESS_REGEXP = /success/i;
+
+    const cmd = `upload-resume ${index}`;
+    const std = await this.run(cmd);
+    if (std.stderr) {
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -441,8 +253,7 @@ module.exports = class TonstorageCLI {
     const cmd = `priority-all ${index} ${priority}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -465,8 +276,7 @@ module.exports = class TonstorageCLI {
     const cmd = `priority-name ${index} ${name} ${priority}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -489,8 +299,7 @@ module.exports = class TonstorageCLI {
     const cmd = `priority-idx ${index} ${fileId} ${priority}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -515,8 +324,7 @@ module.exports = class TonstorageCLI {
     const cmd = 'deploy-provider';
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const addressMatch = ADDRESS_REGEXP.exec(std.stdout);
@@ -533,50 +341,10 @@ module.exports = class TonstorageCLI {
   }
 
   async getProviderInfo() {
-    const ADDRESS_REGEXP = /storage\sprovider\s(?<address>[-1|0]:[A-F0-9]{64})/i;
-    const CONTRACTS_REGEXP = /storage\scontracts:\s(?<count>[0-9]+)\s\/\s(?<limit>[0-9]+)/i;
-    const SIZE_REGEXP = /total\ssize:\s(?<size>[0-9]+\w+)\s\/\s(?<total>[0-9]+\w+)/i;
-    const BALANCE_REGEXP = /main\scontract\sbalance:\s(?<balance>[0-9.]+)\ston/i;
-    const CONTRACT_REGEXP = /(?<address>[-1|0]:[A-F0-9]{64})\s*(?<hash>[A-F0-9]{64})\s*(?<date>.+)\s\s(?<size>[0-9]+\w+)\s*(?<state>\w+)\s*(?<clientBalance>[0-9.]+)\s*(?<contractBalance>[0-9.]+)/i;
+    const cmd = 'get-provider-info --json --contracts --balances';
 
-    const cmd = 'get-provider-info --contracts --balances';
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const addressMatch = ADDRESS_REGEXP.exec(std.stdout);
-    const contractsMatch = CONTRACTS_REGEXP.exec(std.stdout);
-    const sizeMatch = SIZE_REGEXP.exec(std.stdout);
-    const balanceMatch = BALANCE_REGEXP.exec(std.stdout);
-
-    const contracts = [];
-    const lines = std.stdout.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const contractMatch = CONTRACT_REGEXP.exec(line);
-      if (contractMatch && contractMatch.groups) {
-        contracts.push({
-          ...contractMatch.groups,
-          date: +new Date(contractMatch.groups.date),
-        });
-      }
-    }
-
-    return {
-      ok: true,
-      result: {
-        address: (addressMatch && addressMatch.groups) ? addressMatch.groups.address : null,
-        size: (sizeMatch && sizeMatch.groups) ? sizeMatch.groups.size : null,
-        total: (sizeMatch && sizeMatch.groups) ? sizeMatch.groups.total : null,
-        balance: (balanceMatch && balanceMatch.groups) ? parseFloat(balanceMatch.groups.balance) : null,
-        contractsCount: (contractsMatch && contractsMatch.groups) ? parseInt(contractsMatch.groups.count, 10) : null,
-        contractsLimit: (contractsMatch && contractsMatch.groups) ? parseInt(contractsMatch.groups.limit, 10) : null,
-        contracts,
-      },
-      code: 0,
-    };
+    const res = await this.response(cmd);
+    return res;
   }
 
   async setProviderConfig(maxContracts, maxTotalSize) {
@@ -585,8 +353,7 @@ module.exports = class TonstorageCLI {
     const cmd = `set-provider-config --max-contracts ${maxContracts} --max-total-size ${maxTotalSize}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -604,36 +371,10 @@ module.exports = class TonstorageCLI {
   }
 
   async getProviderParams(providerAddress = null) {
-    const ACCEPT_REGEXP = /accept\snew\scontracts:\s(?<accept>\w+)/i;
-    const RATE_REGEXP = /rate\s\(nanoton\sper\sday\*mb\):\s(?<rate>[0-9]+)/i;
-    const MAX_SPAN_REGEXP = /max\sspan:\s(?<maxSpan>[0-9]+)/i;
-    const MIN_FILE_SIZE_REGEXP = /min\sfile\ssize:\s(?<minFileSize>[0-9]+)/i;
-    const MAX_FILE_SIZE_REGEXP = /max\sfile\ssize:\s(?<maxFileSize>[0-9]+)/i;
+    const cmd = `get-provider-params --json ${providerAddress ? `${providerAddress}` : ''}`;
 
-    const cmd = `get-provider-params${providerAddress ? ` ${providerAddress}` : ''}`;
-    const std = await this.run(cmd);
-    if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
-    }
-
-    const acceptMatch = ACCEPT_REGEXP.exec(std.stdout);
-    const rateMatch = RATE_REGEXP.exec(std.stdout);
-    const maxSpanMatch = MAX_SPAN_REGEXP.exec(std.stdout);
-    const minFileSizeMatch = MIN_FILE_SIZE_REGEXP.exec(std.stdout);
-    const maxFileSizeMatch = MAX_FILE_SIZE_REGEXP.exec(std.stdout);
-
-    return {
-      ok: true,
-      result: {
-        accept: (acceptMatch && acceptMatch.groups) ? Boolean(acceptMatch.groups.accept) : null,
-        rate: (rateMatch && rateMatch.groups) ? parseInt(rateMatch.groups.rate, 10) : null,
-        maxSpan: (maxSpanMatch && maxSpanMatch.groups) ? parseInt(maxSpanMatch.groups.maxSpan, 10) : null,
-        minFileSizeMatch: (minFileSizeMatch && minFileSizeMatch.groups) ? parseInt(minFileSizeMatch.groups.minFileSize, 10) : null,
-        maxFileSizeMatch: (maxFileSizeMatch && maxFileSizeMatch.groups) ? parseInt(maxFileSizeMatch.groups.maxFileSize, 10) : null,
-      },
-      code: 0,
-    };
+    const res = await this.response(cmd);
+    return res;
   }
 
   async setProviderParams(accept, rate, maxSpan, minFileSize, maxFileSize) {
@@ -642,8 +383,7 @@ module.exports = class TonstorageCLI {
     const cmd = `set-provider-params --accept ${accept} --rate ${rate} --max-span ${maxSpan} --min-file-size ${minFileSize} --max-file-size ${maxFileSize}`;
     const std = await this.run(cmd, { timeout: 30000 });
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -667,8 +407,7 @@ module.exports = class TonstorageCLI {
     const cmd = `new-contract-message ${torrent} ${file} --query-id ${queryId} --provider ${providerAddress}`;
     const std = await this.run(cmd);
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const rateMatch = RATE_REGEXP.exec(std.stdout);
@@ -688,11 +427,10 @@ module.exports = class TonstorageCLI {
   async closeContract(address) {
     const SUCCESS_REGEXP = /closing\sstorage\scontract/i;
 
-    const cmd = `close-contract ${address}`
+    const cmd = `close-contract ${address}`;
     const std = await this.run(cmd, { timeout: 30000 });
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -715,8 +453,7 @@ module.exports = class TonstorageCLI {
     const cmd = `withdraw ${address}`;
     const std = await this.run(cmd, { timeout: 30000 });
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -739,8 +476,7 @@ module.exports = class TonstorageCLI {
     const cmd = 'withdraw-all';
     const std = await this.run(cmd, { timeout: 30000 });
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
@@ -763,8 +499,7 @@ module.exports = class TonstorageCLI {
     const cmd = `send-coins ${address} ${amount}${options.message ? ` --message '${options.message}'` : ''}`;
     const std = await this.run(cmd, { timeout: 30000 });
     if (std.stderr) {
-      const error = std.stderr.replaceAll('/n', '');
-      return { ok: false, error, code: 400 };
+      return { ok: false, error: std.stderr, code: 400 };
     }
 
     const successMatch = SUCCESS_REGEXP.test(std.stdout);
