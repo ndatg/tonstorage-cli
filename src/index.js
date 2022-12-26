@@ -1,6 +1,11 @@
 const util = require('util');
 const childProcess = require('child_process');
+const { join } = require('path');
+const { tmpdir } = require('os');
+const crypto = require('crypto');
+const fs = require('fs');
 
+const fsPromise = fs.promises;
 const exec = util.promisify(childProcess.exec);
 
 module.exports = class TonstorageCLI {
@@ -400,12 +405,14 @@ module.exports = class TonstorageCLI {
     };
   }
 
-  async newContractMessage(torrent, file, queryId, providerAddress) {
+  async newContractMessage(torrent, queryId, providerAddress) {
     const RATE_REGEXP = /rate\s\(nanoton\sper\smb\*day\):\s(?<rate>[0-9]+)/i;
     const MAX_SPAN_REGEXP = /max\sspan:\s(?<maxSpan>[0-9]+)/i;
 
-    const cmd = `new-contract-message ${torrent} ${file} --query-id ${queryId} --provider ${providerAddress}`;
-    const std = await this.run(cmd);
+    const tempFilePath = join(tmpdir(), crypto.randomBytes(6).readUIntLE(0, 6).toString(36));
+
+    const cmd = `new-contract-message ${torrent} ${tempFilePath} --query-id ${queryId} --provider ${providerAddress}`;
+    const std = await this.run(cmd, { timeout: 120000 });
     if (std.stderr) {
       return { ok: false, error: std.stderr, code: 400 };
     }
@@ -413,10 +420,18 @@ module.exports = class TonstorageCLI {
     const rateMatch = RATE_REGEXP.exec(std.stdout);
     const maxSpanMatch = MAX_SPAN_REGEXP.exec(std.stdout);
 
+    let payload = '';
+    try {
+      payload = await fsPromise.readFile(tempFilePath, { encoding: 'base64' });
+      await fsPromise.rm(tempFilePath);
+    } catch (e) {
+      return { ok: false, error: `error: ${e.message}`, code: 400 };
+    }
+
     return {
       ok: true,
       result: {
-        file,
+        payload,
         rate: (rateMatch && rateMatch.groups) ? parseInt(rateMatch.groups.rate, 10) : null,
         maxSpan: (maxSpanMatch && maxSpanMatch.groups) ? parseInt(maxSpanMatch.groups.maxSpan, 10) : null,
       },

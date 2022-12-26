@@ -57,22 +57,22 @@ const TonstorageCLI = require('../src');
 
   // const downloadPause = await CLI.downloadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
   // console.log(downloadPause);
-  //
+
   // const downloadResume = await CLI.downloadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
   // console.log(downloadResume);
-  //
+
   // const uploadPause = await CLI.uploadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
   // console.log(uploadPause);
-  //
+
   // const uploadResume = await CLI.uploadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
   // console.log(uploadResume);
 
   // const priorityAll = await CLI.priorityAll('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 3);
   // console.log(priorityAll);
-  //
+
   // const priorityName = await CLI.priorityName('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 'readme.md', 4);
   // console.log(priorityName);
-  //
+
   // const priorityIdx = await CLI.priorityIdx('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 0, 5);
   // console.log(priorityIdx);
 
@@ -89,17 +89,16 @@ const TonstorageCLI = require('../src');
   // const setProviderConfig = await CLI.setProviderConfig(98, 300000000000);
   // console.log(setProviderConfig);
 
-  // const getProviderParams = await CLI.getProviderParams('0:1FE4669208B1BEB10DFA97B0DFE973D90B07DF9D7754563440266B2725D50E53');
+  // const getProviderParams = await CLI.getProviderParams('0:3D34FF8D7E3665BBAF9092C967318A310FFC760F59FBB620CF20CC40B0EB51A9');
   // console.log(getProviderParams);
-  //
+
   // const setProviderParams = await CLI.setProviderParams(1, 1000000000, 86400, 1024, 1000000000);
   // console.log(setProviderParams);
 
   // const newContractMessage = await CLI.newContractMessage(
   //   'A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B',
-  //   '/root/contract-message-file',
   //   0,
-  //   '0:1FE4669208B1BEB10DFA97B0DFE973D90B07DF9D7754563440266B2725D50E53',
+  //   '0:3D34FF8D7E3665BBAF9092C967318A310FFC760F59FBB620CF20CC40B0EB51A9',
   // );
   // console.log(newContractMessage);
 
