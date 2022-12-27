@@ -412,7 +412,7 @@ module.exports = class TonstorageCLI {
     const tempFilePath = resolve(tmpdir(), crypto.randomBytes(6).readUIntLE(0, 6).toString(36));
 
     const cmd = `new-contract-message ${torrent} ${tempFilePath} --query-id ${queryId} --provider ${providerAddress}`;
-    const std = await this.run(cmd, { timeout: 120000 });
+    const std = await this.run(cmd, { timeout: 30000 });
     if (std.stderr) {
       return { ok: false, error: std.stderr, code: 400 };
     }
