@@ -78,8 +78,9 @@ module.exports = class TonstorageCLI {
     return res;
   }
 
-  async create(path, options = { upload: true, description: null }) {
-    const cmd = `create ${path} --json ${!options.upload ? '--no-upload ' : ''}`
+  async create(path, options = { upload: true, copy: false, description: null }) {
+    const cmd = `create '${path}' --json ${!options.upload ? '--no-upload' : ''} `
+      + `${options.copy ? '--copy' : ''} `
       + `${options.description ? `-d '${options.description}'` : ''}`;
 
     const res = await this.response(cmd);
@@ -345,8 +346,8 @@ module.exports = class TonstorageCLI {
     };
   }
 
-  async getProviderInfo() {
-    const cmd = 'get-provider-info --json --contracts --balances';
+  async getProviderInfo(options = { contracts: true, balances: true }) {
+    const cmd = `get-provider-info --json ${options.contracts ? '--contracts' : ''} ${options.balances ? '--balances' : ''}`;
 
     const res = await this.response(cmd);
     return res;

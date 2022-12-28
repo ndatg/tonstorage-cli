@@ -28,7 +28,7 @@ const TonstorageCLI = require('../src');
   // console.log(getPeers);
   // console.log(getPeers.result);
 
-  // const create = await CLI.create('/root/temp', { upload: false, description: 'my test description' });
+  // const create = await CLI.create('/root/temp', { upload: false, copy: true, description: 'my test description' });
   // console.log(create);
   // console.log(create.result);
 
