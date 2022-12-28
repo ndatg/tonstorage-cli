@@ -279,7 +279,7 @@ module.exports = class TonstorageCLI {
   async priorityName(index, name, priority) {
     const SUCCESS_REGEXP = /priority\swas\sset/i;
 
-    const cmd = `priority-name ${index} ${name} ${priority}`;
+    const cmd = `priority-name ${index} '${name}' ${priority}`;
     const std = await this.run(cmd);
     if (std.stderr) {
       return { ok: false, error: std.stderr, code: 400 };
