@@ -48,14 +48,14 @@ npm install tonstorage-cli --save
 ### Initialization
 
 ```js
-  const TonstorageCLI = require('tonstorage-cli');
+const TonstorageCLI = require('tonstorage-cli');
 
-  const CLI = new TonstorageCLI({
-    bin: '/root/storage-daemon-cli',
-    host: '127.0.0.1:5555',
-    database: '/var/ton-storage',
-    timeout: 5000,
-  });
+const CLI = new TonstorageCLI({
+  bin: '/root/storage-daemon-cli',
+  host: '127.0.0.1:5555',
+  database: '/var/ton-storage',
+  timeout: 5000,
+});
 ```
 
 ---
@@ -68,9 +68,9 @@ npm install tonstorage-cli --save
 
 **Example:**
 ```js
-  const list = await CLI.run('list');
-  const get = await CLI.run('get 93EFBE92E0B21EEEF8EA8D3412CB15146A8BFEDEF3338509F7B9983362E15CDE', { timeout: 10000 });
-  const addByHash = await CLI.run('add-by-hash 93EFBE92E0B21EEEF8EA8D3412CB15146A8BFEDEF3338509F7B9983362E15CDE --partial 10. O Come, O Come Emmanuel.flac');
+const list = await CLI.run('list');
+const get = await CLI.run('get 93EFBE92E0B21EEEF8EA8D3412CB15146A8BFEDEF3338509F7B9983362E15CDE', { timeout: 10000 });
+const addByHash = await CLI.run('add-by-hash 93EFBE92E0B21EEEF8EA8D3412CB15146A8BFEDEF3338509F7B9983362E15CDE --partial 10. O Come, O Come Emmanuel.flac');
 ```
 
 ___
@@ -83,7 +83,7 @@ ___
 
 **Example:**
 ```js
-  const list = await CLI.list();
+const list = await CLI.list();
 ```
 
 ___
@@ -94,7 +94,7 @@ ___
 
 **Example:**
 ```js
-  const get = await CLI.get('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+const get = await CLI.get('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
 ```
 
 ___
@@ -105,7 +105,7 @@ ___
 
 **Example:**
 ```js
-  const getPeers = await CLI.getPeers('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+const getPeers = await CLI.getPeers('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
 ```
 
 ___
@@ -116,7 +116,7 @@ ___
 
 **Example:**
 ```js
-  const create = await CLI.create('/root/temp', { upload: false, copy: true, description: 'my test description' });
+const create = await CLI.create('/root/temp', { upload: false, copy: true, description: 'my test description' });
 ```
 
 ___
@@ -127,13 +127,13 @@ ___
 
 **Example:**
 ```js
-  const addByHash = await CLI.addByHash('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', {
-    download: false,
-    upload: false,
-    partialFiles: [
-      'readme.md',
-    ],
-  });
+const addByHash = await CLI.addByHash('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', {
+  download: false,
+  upload: false,
+  partialFiles: [
+    'readme.md',
+  ],
+});
 ```
 
 ___
@@ -144,13 +144,13 @@ ___
 
 **Example:**
 ```js
-  const addByMeta = await CLI.addByMeta('/root/meta-file', {
-    download: false,
-    upload: false,
-    partialFiles: [
-      'readme.md',
-    ],
-  });
+const addByMeta = await CLI.addByMeta('/root/meta-file', {
+  download: false,
+  upload: false,
+  partialFiles: [
+    'readme.md',
+  ],
+});
 ```
 
 ___
@@ -161,7 +161,7 @@ ___
 
 **Example:**
 ```js 
-  const getMeta = await CLI.getMeta('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', '/root/meta-file');
+const getMeta = await CLI.getMeta('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', '/root/meta-file');
 ```
 
 ___
@@ -172,7 +172,7 @@ ___
 
 **Example:**
 ```js
-  const remove = await CLI.remove('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', { removeFiles: false });
+const remove = await CLI.remove('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', { removeFiles: false });
 ```
 
 ___
@@ -183,7 +183,7 @@ ___
 
 **Example:**
 ```js
-  const downloadPause = await CLI.downloadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+const downloadPause = await CLI.downloadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
 ```
 
 ___
@@ -194,7 +194,7 @@ ___
 
 **Example:**
 ```js
-  const downloadResume = await CLI.downloadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+const downloadResume = await CLI.downloadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
 ```
 
 ___
@@ -205,7 +205,7 @@ ___
 
 **Example:**
 ```js
-  const uploadPause = await CLI.uploadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+const uploadPause = await CLI.uploadPause('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
 ```
 
 ___
@@ -216,7 +216,7 @@ ___
 
 **Example:**
 ```js
-  const uploadResume = await CLI.uploadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
+const uploadResume = await CLI.uploadResume('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B');
 ```
 
 ___
@@ -227,7 +227,7 @@ ___
 
 **Example:**
 ```js
-  const priorityAll = await CLI.priorityAll('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 3);
+const priorityAll = await CLI.priorityAll('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 3);
 ```
 
 ___
@@ -238,7 +238,7 @@ ___
 
 **Example:**
 ```js
-  const priorityName = await CLI.priorityName('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 'readme.md', 4);
+const priorityName = await CLI.priorityName('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 'readme.md', 4);
 ```
 
 ___
@@ -249,7 +249,7 @@ ___
 
 **Example:**
 ```js
-  const priorityIdx = await CLI.priorityIdx('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 0, 5);
+const priorityIdx = await CLI.priorityIdx('A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B', 0, 5);
 ```
 
 ___
@@ -262,7 +262,7 @@ ___
 
 **Example:**
 ```js
-  const deployProvider = await CLI.deployProvider();
+const deployProvider = await CLI.deployProvider();
 ```
 
 ___
@@ -273,7 +273,7 @@ ___
 
 **Example:**
 ```js
-  const getProviderInfo = await CLI.getProviderInfo();
+const getProviderInfo = await CLI.getProviderInfo();
 ```
 
 ___
@@ -284,7 +284,7 @@ ___
 
 **Example:**
 ```js
-  const setProviderConfig = await CLI.setProviderConfig(98, 300000000000);
+const setProviderConfig = await CLI.setProviderConfig(98, 300000000000);
 ```
 
 ___
@@ -295,7 +295,7 @@ ___
 
 **Example:**
 ```js
-  const getProviderParams = await CLI.getProviderParams('0:3D34FF8D7E3665BBAF9092C967318A310FFC760F59FBB620CF20CC40B0EB51A9');
+const getProviderParams = await CLI.getProviderParams('0:3D34FF8D7E3665BBAF9092C967318A310FFC760F59FBB620CF20CC40B0EB51A9');
 ```
 
 ___
@@ -306,7 +306,7 @@ ___
 
 **Example:**
 ```js
-  const setProviderParams = await CLI.setProviderParams(1, 1000000000, 86400, 1024, 1000000000);
+const setProviderParams = await CLI.setProviderParams(1, 1000000000, 86400, 1024, 1000000000);
 ```
 
 ___
@@ -317,11 +317,11 @@ ___
 
 **Example:**
 ```js
-  const newContractMessage = await CLI.newContractMessage(
-    'A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B',
-    0,
-    '0:3D34FF8D7E3665BBAF9092C967318A310FFC760F59FBB620CF20CC40B0EB51A9',
-  );
+const newContractMessage = await CLI.newContractMessage(
+  'A474C4FD55BA3B954AD3FD9C86CA593F7E1EF42D7FDAC1D3474CA08AC0945A6B',
+  0,
+  '0:3D34FF8D7E3665BBAF9092C967318A310FFC760F59FBB620CF20CC40B0EB51A9',
+);
 ```
 
 ___
@@ -332,7 +332,7 @@ ___
 
 **Example:**
 ```js
-  const closeContract = await CLI.closeContract('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090');
+const closeContract = await CLI.closeContract('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090');
 ```
 
 ___
@@ -343,7 +343,7 @@ ___
 
 **Example:**
 ```js
-  const withdraw = await CLI.withdraw('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090');
+const withdraw = await CLI.withdraw('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090');
 ```
 
 ___
@@ -354,7 +354,7 @@ ___
 
 **Example:**
 ```js
-  const withdrawAll = await CLI.withdrawAll();
+const withdrawAll = await CLI.withdrawAll();
 ```
 
 ___
@@ -365,7 +365,7 @@ ___
 
 **Example:**
 ```js
-  const sendCoins = await CLI.sendCoins('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090', 1000000000, 'text');
+const sendCoins = await CLI.sendCoins('0:067A0AE1B039DDE9297BE176318BDB236F4D74819E10D4BB442DBAAD55ABF090', 1000000000, 'text');
 ```
 
 ___
