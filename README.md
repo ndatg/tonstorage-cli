@@ -1,6 +1,6 @@
 # TON Storage CLI
 
-The TON Storage CLI is a Node.js application that you can use to connect to and interact with `storage-daemon`.
+TON Storage CLI is a Node.js application that you can use to connect to and interact with `storage-daemon`.
 
 ## Overview
 
