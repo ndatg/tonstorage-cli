@@ -1,7 +1,7 @@
 {
   "name": "tonstorage-cli",
   "version": "1.0.0",
-  "description": "",
+  "description": "TON Storage CLI is a Node.js application that you can use to connect to and interact with storage-daemon",
   "main": "./src/index.js",
   "scripts": {
     "test": "jest"
