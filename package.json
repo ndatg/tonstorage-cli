@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest"
   },
-  "keywords": [],
+  "keywords": ["TON", "CLI", "blockchain", "crypto", "storage"],
   "author": "ndatg",
   "license": "MIT",
   "repository": "https://github.com/ndatg/tonstorage-cli",
