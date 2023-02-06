@@ -21,7 +21,7 @@ module.exports = class TonstorageCLI {
   async run(cmd, options = {}) {
     try {
       const std = await exec(
-        `${this.bin} -v 0 -I ${this.host} -k ${this.database}/cli-keys/client -p ${this.database}/cli-keys/server.pub --cmd "${cmd}"`, { 
+        `${this.bin} -v 0 -I ${this.host} -k "${this.database}/cli-keys/client" -p "${this.database}/cli-keys/server.pub" --cmd "${cmd}"`, {
           timeout: options.timeout ? options.timeout : this.timeout,         
           maxBuffer: options.maxBuffer ? options.maxBuffer : this.maxBuffer },
       );
