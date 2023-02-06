@@ -96,33 +96,33 @@ export type StorageDaemonResult<T> = ({
 export default class TonstorageCLI {
     constructor (options: StorageCLI_ConstructorArgs);
 
-    async run (cmd: string, options?: StorageCLI_RunArgs): Promise<{ stdout: string, stderr: string }>;
-    async response (cmd: string): Promise<StorageDaemonResult<any>>;
-    async list (): Promise<StorageDaemonResult<StorageDaemonTorrentList>>;
-    async get (hash: string): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
-    async getPeers (hash: string): Promise<StorageDaemonResult<StorageDaemonPeerList>>;
-    async create (path: string, options?: StorageCLI_CreateArgs): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
-    async addByHash (hash: string, options?: StorageCLI_AddArgs): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
-    async addByMeta (path: string, options?: StorageCLI_AddArgs): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
-    async getMeta (hash: string, path: string): Promise<StorageDaemonResult<{ message: "success", size: string }>>;
-    async remove (hash: string, options: StorageCLI_RemoveArgs): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async downloadPause (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async downloadResume (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async uploadPause (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async uploadResume (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async priorityAll (hash: string, priority: number): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async priorityName (hash: string, name: string, priority: number): Promise<StorageDaemonResult<{ message: "success" }>>;
-    async priorityIdx (hash: string, idx: number | string, priority: number): Promise<StorageDaemonResult<{ message: "success" }>>;
+    run (cmd: string, options?: StorageCLI_RunArgs): Promise<{ stdout: string, stderr: string }>;
+    response (cmd: string): Promise<StorageDaemonResult<any>>;
+    list (): Promise<StorageDaemonResult<StorageDaemonTorrentList>>;
+    get (hash: string): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
+    getPeers (hash: string): Promise<StorageDaemonResult<StorageDaemonPeerList>>;
+    create (path: string, options?: StorageCLI_CreateArgs): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
+    addByHash (hash: string, options?: StorageCLI_AddArgs): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
+    addByMeta (path: string, options?: StorageCLI_AddArgs): Promise<StorageDaemonResult<StorageDaemonFullTorrent>>;
+    getMeta (hash: string, path: string): Promise<StorageDaemonResult<{ message: "success", size: string }>>;
+    remove (hash: string, options: StorageCLI_RemoveArgs): Promise<StorageDaemonResult<{ message: "success" }>>;
+    downloadPause (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
+    downloadResume (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
+    uploadPause (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
+    uploadResume (hash: string): Promise<StorageDaemonResult<{ message: "success" }>>;
+    priorityAll (hash: string, priority: number): Promise<StorageDaemonResult<{ message: "success" }>>;
+    priorityName (hash: string, name: string, priority: number): Promise<StorageDaemonResult<{ message: "success" }>>;
+    priorityIdx (hash: string, idx: number | string, priority: number): Promise<StorageDaemonResult<{ message: "success" }>>;
 
     // TODO: 
-    async deployProvider (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async getProviderInfo (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async setProviderConfig (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async getProviderParams (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async setProviderParams (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async newContractMessage (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async closeContract (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async withdraw (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async withdrawAll (...args: any[]): Promise<StorageDaemonResult<any>>;
-    async sendCoins (...args: any[]): Promise<StorageDaemonResult<any>>;
+    deployProvider (...args: any[]): Promise<StorageDaemonResult<any>>;
+    getProviderInfo (...args: any[]): Promise<StorageDaemonResult<any>>;
+    setProviderConfig (...args: any[]): Promise<StorageDaemonResult<any>>;
+    getProviderParams (...args: any[]): Promise<StorageDaemonResult<any>>;
+    setProviderParams (...args: any[]): Promise<StorageDaemonResult<any>>;
+    newContractMessage (...args: any[]): Promise<StorageDaemonResult<any>>;
+    closeContract (...args: any[]): Promise<StorageDaemonResult<any>>;
+    withdraw (...args: any[]): Promise<StorageDaemonResult<any>>;
+    withdrawAll (...args: any[]): Promise<StorageDaemonResult<any>>;
+    sendCoins (...args: any[]): Promise<StorageDaemonResult<any>>;
 }
