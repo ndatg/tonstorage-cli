@@ -14,14 +14,16 @@ module.exports = class TonstorageCLI {
     this.host = options.host;
     this.database = options.database;
     this.timeout = options.timeout;
+    this.maxBuffer = options.maxBuffer;
   }
 
   // main
   async run(cmd, options = {}) {
     try {
       const std = await exec(
-        `${this.bin} -v 0 -I ${this.host} -k ${this.database}/cli-keys/client -p ${this.database}/cli-keys/server.pub --cmd "${cmd}"`,
-        { timeout: options.timeout ? options.timeout : this.timeout },
+        `${this.bin} -v 0 -I ${this.host} -k ${this.database}/cli-keys/client -p ${this.database}/cli-keys/server.pub --cmd "${cmd}"`, { 
+          timeout: options.timeout ? options.timeout : this.timeout,         
+          maxBuffer: options.maxBuffer ? options.maxBuffer : this.maxBuffer },
       );
 
       return { stdout: std.stdout, stderr: '' };
