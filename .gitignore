@@ -1,6 +1,7 @@
 /.idea/
-/coverage/
 /node_modules/
-/test-reports/
+/dist/
+/docs/
 .DS_Store
 *.iml
+.env
