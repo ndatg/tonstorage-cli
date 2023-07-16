@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import crypto from "crypto";
-import { Command } from "./Command";
+import Command from "./Command";
 
 type response = { ok: false, error: string } | { ok: true, result: any };
 

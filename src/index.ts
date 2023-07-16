@@ -1,1 +1,2 @@
-export * from "./TonstorageCLI";
+import TonstorageCLI from "./TonstorageCLI";
+export default TonstorageCLI;
