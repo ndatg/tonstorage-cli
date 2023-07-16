@@ -9,7 +9,16 @@ import { Command } from "./Command";
 type response = { ok: false, error: string } | { ok: true, result: any };
 
 export class TonstorageCLI {
-  constructor(private bin: string, private host: string, private database: string, private timeout: number) {
+  private bin;
+  private host;
+  private database;
+  private timeout;
+
+  constructor(options: { bin: string, host: string, database: string, timeout: number }) {
+    this.bin = options.bin;
+    this.host = options.host;
+    this.database = options.database;
+    this.timeout = options.timeout;
   }
 
   // cli

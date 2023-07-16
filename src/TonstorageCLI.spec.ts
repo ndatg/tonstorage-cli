@@ -9,12 +9,12 @@ describe("tonstorage-cli tests", () => {
   let bagId: string;
 
   beforeAll(async () => {
-    tonstorage = new TonstorageCLI(
-      "/root/storage-daemon-cli",
-      "127.0.0.1:5555",
-      "/var/ton-storage",
-      5000
-    );
+    tonstorage = new TonstorageCLI({
+      bin: "/root/storage-daemon-cli",
+      host: "127.0.0.1:5555",
+      database: "/var/ton-storage",
+      timeout: 5000,
+    });
 
     tempFolderPath = path.resolve(__dirname, "temp");
     if (fs.existsSync(tempFolderPath)) {
