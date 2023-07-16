@@ -1,5 +1,5 @@
 import { describe, beforeAll, afterAll, test, expect } from "@jest/globals";
-import { TonstorageCLI } from "./TonstorageCLI";
+import TonstorageCLI from "./TonstorageCLI";
 import path from "path";
 import fs from "fs";
 

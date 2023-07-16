@@ -8,7 +8,7 @@ import { Command } from "./Command";
 
 type response = { ok: false, error: string } | { ok: true, result: any };
 
-export class TonstorageCLI {
+export default class TonstorageCLI {
   constructor(private bin: string, private host: string, private database: string, private timeout: number) {
   }
 
