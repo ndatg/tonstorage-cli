@@ -1,4 +1,4 @@
-export default class Command {
+export class Command {
   constructor(private cmd: string, private internal?: boolean) {
   }
 

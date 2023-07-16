@@ -11,9 +11,9 @@ npm install tonstorage-cli --save
 ```
 
 ```js
-import TonstorageCLI from "tonstorage-cli";
+import { TonstorageCLI } from "tonstorage-cli";
 
-const CLI = new TonstorageCLI(
+const tonstorage = new TonstorageCLI(
   "/root/storage-daemon-cli",
   "127.0.0.1:5555",
   "/var/ton-storage",
